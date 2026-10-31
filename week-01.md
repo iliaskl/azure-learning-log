@@ -41,6 +41,7 @@ Part 2: create my first VM, connect to it, look at what else got created, then d
 - `ls /`: top-level Linux folders (home, etc, var, tmp, etc.)
 
 **What got created besides the VM:**
+
 | Resource | What it is | Costs money? |
 |---|---|---|
 | OS disk | The VM's 30 GB drive | Yes, even when the VM is stopped |
@@ -117,7 +118,7 @@ az vm create -n vm-week1 -g rg-week1 --image Ubuntu2404 --generate-ssh-keys
 | `--generate-ssh-keys` | An existing key in ~/.ssh; fails if there's none | Medium |
 
 **What I'd explain to a customer in one sentence:**
-[Your turn: why use the CLI instead of clicking in the portal?]
+Once you know exactly what you need, the CLI is much faster than clicking through the portal, and since you can save and rerun commands, it's the better choice for anything repetitive like creating multiple VMs.
 
 **Next session:**
 Wrap up: check costs, push the log, tick "Lab setup" in the tracker.
