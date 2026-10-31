@@ -21,7 +21,9 @@
 A budget in Azure is basically an alarm. It emails you when you're getting close to your spending limit, but it won't shut anything off, so you still have to delete stuff you're not using.
 
 **Next session:**
-Part 2: create my first VM (Ubuntu, B1s) in rg-week1, connect to it, look at what else got created, then delete the resource group.
+Part 2: create my first VM, connect to it, look at what else got created, then delete the resource group.
+
+---
 
 ## 2026-10-31 · Week 1 · First virtual machine (part 2)
 
@@ -61,4 +63,61 @@ Part 2: create my first VM (Ubuntu, B1s) in rg-week1, connect to it, look at wha
 Stopping a VM doesn't stop all charges, because the disk and public IP keep billing, so delete the resource group once you're completely done with it.
 
 **Next session:**
-Part 3: the same thing from the command line (az group create / list / delete).
+Part 3: the same thing from the command line.
+
+---
+
+## 2026-10-31 · Week 1 · Command line (part 3)
+
+**Commands I ran in Cloud Shell (Bash):**
+- `az account show -o table`: shows which subscription the CLI is working in
+- `az group create --name rg-cli --location westus2`: created a resource group
+- `az group list -o table`: listed my resource groups in a readable table
+- `az group delete --name rg-cli --yes`: deleted the group without asking for confirmation (printed nothing, which meant it worked)
+- `az provider register --namespace Microsoft.CloudShell`: registered Cloud Shell to fix the warning
+- `az vm --help` and `az vm create --help`: showed all VM options (way too many, so I filtered with grep)
+
+**az vm create options (matching the portal fields):**
+- `-n` name of the VM
+- `-g` name of the resource group
+- `--image` operating system of the VM
+- `-l` physical datacenter location (ex. westus2)
+- `--size` CPU and memory for the VM
+- `--admin-username` username of the main admin (ex. azureuser)
+- `--generate-ssh-keys` option that creates the login key pair (like vm-week1_key, but saved in ~/.ssh instead of downloaded)
+
+**Rules I figured out:**
+- Creating a VM always starts with `az vm create`; the options after it can go in any order
+- `-n`, `-g` and `--image` are required. I should also set `--size` myself to control cost
+- No output usually means success; errors are what make noise
+- `-o table` makes output readable; the default is JSON
+
+**Example 1: everything set manually (recommended):**
+```bash
+az vm create \
+  -n vm-week1 \
+  -g rg-week1 \
+  -l westus2 \
+  --image Ubuntu2404 \
+  --size Standard_B2ats_v2 \
+  --admin-username azureuser \
+  --generate-ssh-keys
+```
+
+**Example 2: minimum, Azure fills in the rest:**
+```bash
+az vm create -n vm-week1 -g rg-week1 --image Ubuntu2404 --generate-ssh-keys
+```
+
+| Option left out | What Azure uses instead | Risk |
+|---|---|---|
+| `-l` | The resource group's location | Low |
+| `--size` | Azure's default size | High: can be ~$70/month or blocked on a trial |
+| `--admin-username` | My Cloud Shell login name (ilias) | Low |
+| `--generate-ssh-keys` | An existing key in ~/.ssh; fails if there's none | Medium |
+
+**What I'd explain to a customer in one sentence:**
+[Your turn: why use the CLI instead of clicking in the portal?]
+
+**Next session:**
+Wrap up: check costs, push the log, tick "Lab setup" in the tracker.
