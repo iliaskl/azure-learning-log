@@ -1,4 +1,4 @@
-# Azure Networking Cheat Sheet
+# Azure Networking Note Sheet
 
 **Contents**
 1. CIDR rules
