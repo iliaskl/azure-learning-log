@@ -5,7 +5,7 @@
 **Contents**
 1. Session 1 (Nov 14): Users, groups, roles
 2. Session 2 (Nov 14): Testing roles as alex.test
-3. Session 3: Storage *(to do)*
+3. Session 3 (Nov 14): Storage
 4. Reference: key concepts
 5. Commands cheat sheet
 
@@ -95,7 +95,39 @@
 - **Page blobs:** VM disks (lots of small random reads and writes)
 - **Append blobs:** logs (only add to the end)
 
-## 3. Storage *(to do)*
+## 3. 2026-11-14 · Week 3 · Storage
+
+**What I did:**
+- Rebuilt `stweek3ilias` with the CLI as myself (Standard_LRS, StorageV2, West US 2)
+- In the portal: created a container `files`, uploaded 3 files, changed one to the **Cool** tier
+- Cleanup: deleted rg-week3 with the CLI (took the storage account and files with it), deleted alex.test, sam.test and lab-readers
+
+**What confused me:**
+- Wrote `--group` instead of `--resource-group` (short form: `-g`). Check flag names in `--help`
+- Wrote `az group rg-week3 delete`. The CLI read `rg-week3` as a command. The order is always **`az <what> <action> --flags`**
+
+**What I figured out:**
+- The storage account name becomes a real web address (`https://stweek3ilias.blob.core.windows.net/`), which is why it has to be unique across all of Azure
+- **The CLI and the portal don't always have the same defaults:**
+  - Minimum TLS: portal = 1.2, CLI = **1.0** (old and insecure; Azure even showed a warning banner)
+  - Blob soft delete: portal = enabled, CLI = **disabled**
+  - Lesson: in real scripts, set security settings explicitly instead of trusting defaults
+- **Hot vs Cool:**
+  - Hot = more expensive to store, cheap to read → files people use often
+  - Cool = cheaper to store, more expensive to read, 30-day minimum → files you keep long-term and rarely touch (old invoices, backups)
+  - Putting a file you open every day on Cool costs *more*, not less
+  - Cool doesn't make data "last longer". How safe data is comes from **redundancy** (LRS/GRS), not the tier
+- Files I didn't set a tier on showed **"Hot (Inferred)"**: they inherit the account's default, like roles flowing down from the subscription
+
+**Customer sentence:**
+> Hot is for stuff you use all the time, and Cool is for stuff you need to keep but barely open. It's cheaper to store but costs more each time you pull it out.
+
+---
+
+## Week 3 summary
+- Done Nov 14, ~3.5 hrs (planned ~6)
+- Biggest takeaway: every role assignment is **who + what + where**, and every permission error tells you the same three things
+- Next: Week 4 (Nov 18–24), Python + scripting
 
 ---
 
@@ -121,6 +153,17 @@ Management group
 ## 5. Commands cheat sheet
 
 ```bash
+# Pattern for every command: az <what> <action> --flags
+
 # Create a resource group (watch the spaces between flags)
 az group create --name rg-week3 --location westus2
+
+# Create a storage account (Standard performance + LRS, general purpose v2)
+az storage account create --name stweek3ilias --resource-group rg-week3 --location westus2 --sku Standard_LRS --kind StorageV2
+
+# Delete a resource group and everything in it (asks "Are you sure?")
+az group delete --name rg-week3
+
+# Look up any command's flags
+az storage account create --help
 ```
